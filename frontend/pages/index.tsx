@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
 
 export default function Dashboard() {
   const [signals, setSignals] = useState([])
@@ -56,6 +57,7 @@ export default function Dashboard() {
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">{signal.reason}</p>
+                      <p className="text-xs text-gray-400 mt-1">${signal.price?.toFixed(2) || 'N/A'}</p>
                     </div>
                   ))
                 )}
@@ -67,14 +69,17 @@ export default function Dashboard() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
             <div className="space-y-3">
-              <button className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
-                Add Strategy
-              </button>
-              <button className="w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition">
-                View Logs
+              <Link href="/strategies" className="block w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition text-center">
+                Manage Strategies
+              </Link>
+              <button 
+                onClick={fetchSignals}
+                className="w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition"
+              >
+                Refresh Signals
               </button>
               <button className="w-full bg-purple-500 text-white py-2 px-4 rounded hover:bg-purple-600 transition">
-                Settings
+                Scan All
               </button>
             </div>
           </div>

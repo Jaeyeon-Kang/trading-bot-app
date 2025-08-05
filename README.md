@@ -4,7 +4,16 @@
 
 ## 🚀 빠른 시작
 
-### 1. 환경 설정
+### 1. 데모 보기 (즉시 실행 가능)
+```bash
+# 브라우저에서 demo.html 파일 열기
+open demo.html
+# 또는
+python3 -m http.server 8080
+# 브라우저에서 http://localhost:8080/demo.html 접속
+```
+
+### 2. 환경 설정 (실제 API 사용시)
 ```bash
 # 환경변수 파일 복사
 cp .env.example .env
@@ -17,7 +26,7 @@ cp .env.example .env
 # - TELEGRAM_BOT_TOKEN (선택)
 ```
 
-### 2. Docker로 실행
+### 3. Docker로 실행
 ```bash
 # 전체 서비스 실행
 docker-compose up -d
@@ -26,7 +35,7 @@ docker-compose up -d
 docker-compose logs -f
 ```
 
-### 3. 로컬 개발
+### 4. 로컬 개발
 ```bash
 # 백엔드
 cd backend
@@ -56,11 +65,12 @@ npm run dev
 
 ## 🔧 주요 기능
 
-- **데이터 수집**: Alpaca API (지연 데이터)
+- **데이터 수집**: Alpaca API (지연 데이터) + 데모 모드
 - **기술적 지표**: EMA, RSI, 볼린저 밴드, MACD
-- **신호 발생**: EMA 크로스오버 등
-- **알림**: Slack/Telegram Webhook
-- **뉴스 요약**: GPT-4 기반 (옵션)
+- **신호 발생**: EMA 크로스오버, RSI 과매수/과매도
+- **전략 관리**: 추가/제거/활성화/비활성화
+- **알림**: Slack/Telegram Webhook (구현 예정)
+- **뉴스 요약**: GPT-4 기반 (구현 예정)
 - **대시보드**: 실시간 신호 모니터링
 
 ## 📊 API 엔드포인트
