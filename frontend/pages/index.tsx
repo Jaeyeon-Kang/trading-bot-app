@@ -232,6 +232,12 @@ export default function Dashboard() {
                 <Link href="/notifications" className="block w-full bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition text-center font-medium">
                   🔔 Notification Settings
                 </Link>
+                <Link href="/logs" className="block w-full bg-indigo-500 text-white py-3 px-4 rounded-lg hover:bg-indigo-600 transition text-center font-medium">
+                  📋 Logs & History
+                </Link>
+                <Link href="/settings" className="block w-full bg-gray-500 text-white py-3 px-4 rounded-lg hover:bg-gray-600 transition text-center font-medium">
+                  ⚙️ Settings
+                </Link>
               </div>
             </div>
 
