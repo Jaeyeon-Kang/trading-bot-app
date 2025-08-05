@@ -7,6 +7,7 @@ import os
 from .signals.signal_generator import SignalGenerator
 from .strategies.strategy_manager import StrategyManager
 from .utils.demo_data import generate_demo_signals, generate_demo_strategies
+from .backtest.backtest_engine import BacktestEngine
 
 app = FastAPI(title="Trading Signals API", version="1.0.0")
 
@@ -22,6 +23,7 @@ app.add_middleware(
 # 전역 인스턴스
 signal_generator = SignalGenerator()
 strategy_manager = StrategyManager()
+backtest_engine = BacktestEngine()
 
 # Pydantic 모델들
 class StrategyRequest(BaseModel):
@@ -38,6 +40,12 @@ class SignalResponse(BaseModel):
     reason: str
     timestamp: str
     price: float
+
+class BacktestRequest(BaseModel):
+    strategy: Dict
+    start_date: str
+    end_date: str
+    initial_capital: float = 100000
 
 @app.get("/")
 async def root():
@@ -125,6 +133,84 @@ async def scan_all():
             "scanned_symbols": symbols,
             "signals_found": len(signals),
             "signals": signals
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/backtest")
+async def run_backtest(request: BacktestRequest):
+    """백테스트 실행"""
+    try:
+        result = backtest_engine.run_backtest(
+            strategy_config=request.strategy,
+            start_date=request.start_date,
+            end_date=request.end_date,
+            initial_capital=request.initial_capital
+        )
+        
+        # 거래 기록을 딕셔너리로 변환
+        trades_data = []
+        for trade in result.trades:
+            trades_data.append({
+                'entry_date': trade.entry_date.isoformat(),
+                'exit_date': trade.exit_date.isoformat() if trade.exit_date else None,
+                'symbol': trade.symbol,
+                'entry_price': trade.entry_price,
+                'exit_price': trade.exit_price,
+                'pnl': trade.pnl,
+                'pnl_percent': trade.pnl_percent,
+                'reason': trade.reason
+            })
+        
+        return {
+            'total_return': result.total_return,
+            'annualized_return': result.annualized_return,
+            'sharpe_ratio': result.sharpe_ratio,
+            'max_drawdown': result.max_drawdown,
+            'win_rate': result.win_rate,
+            'total_trades': result.total_trades,
+            'winning_trades': result.winning_trades,
+            'losing_trades': result.losing_trades,
+            'avg_win': result.avg_win,
+            'avg_loss': result.avg_loss,
+            'profit_factor': result.profit_factor,
+            'trades': trades_data,
+            'equity_curve': result.equity_curve.to_dict()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/backtest/quick/{symbol}")
+async def quick_backtest(symbol: str):
+    """빠른 백테스트 (최근 6개월)"""
+    try:
+        from datetime import datetime, timedelta
+        
+        end_date = datetime.now().strftime('%Y-%m-%d')
+        start_date = (datetime.now() - timedelta(days=180)).strftime('%Y-%m-%d')
+        
+        strategy_config = {
+            'symbol': symbol,
+            'rule': 'ema_cross',
+            'params': {'fast': 12, 'slow': 26},
+            'stop': -5,
+            'take': 8
+        }
+        
+        result = backtest_engine.run_backtest(
+            strategy_config=strategy_config,
+            start_date=start_date,
+            end_date=end_date,
+            initial_capital=100000
+        )
+        
+        return {
+            'symbol': symbol,
+            'period': f"{start_date} to {end_date}",
+            'total_return': result.total_return,
+            'win_rate': result.win_rate,
+            'total_trades': result.total_trades,
+            'max_drawdown': result.max_drawdown
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

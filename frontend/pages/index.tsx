@@ -226,9 +226,9 @@ export default function Dashboard() {
                 <Link href="/strategies" className="block w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition text-center font-medium">
                   ⚙️ Manage Strategies
                 </Link>
-                <button className="w-full bg-purple-500 text-white py-3 px-4 rounded-lg hover:bg-purple-600 transition font-medium">
+                <Link href="/backtest" className="block w-full bg-purple-500 text-white py-3 px-4 rounded-lg hover:bg-purple-600 transition text-center font-medium">
                   📊 Run Backtest
-                </button>
+                </Link>
                 <button className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition font-medium">
                   🔔 Notification Settings
                 </button>
