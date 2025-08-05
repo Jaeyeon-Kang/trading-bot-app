@@ -229,9 +229,9 @@ export default function Dashboard() {
                 <Link href="/backtest" className="block w-full bg-purple-500 text-white py-3 px-4 rounded-lg hover:bg-purple-600 transition text-center font-medium">
                   📊 Run Backtest
                 </Link>
-                <button className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition font-medium">
+                <Link href="/notifications" className="block w-full bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition text-center font-medium">
                   🔔 Notification Settings
-                </button>
+                </Link>
               </div>
             </div>
 

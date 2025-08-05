@@ -8,6 +8,7 @@ from .signals.signal_generator import SignalGenerator
 from .strategies.strategy_manager import StrategyManager
 from .utils.demo_data import generate_demo_signals, generate_demo_strategies
 from .backtest.backtest_engine import BacktestEngine
+from .notifications.notification_manager import NotificationManager
 
 app = FastAPI(title="Trading Signals API", version="1.0.0")
 
@@ -24,6 +25,7 @@ app.add_middleware(
 signal_generator = SignalGenerator()
 strategy_manager = StrategyManager()
 backtest_engine = BacktestEngine()
+notification_manager = NotificationManager()
 
 # Pydantic 모델들
 class StrategyRequest(BaseModel):
@@ -211,6 +213,51 @@ async def quick_backtest(symbol: str):
             'win_rate': result.win_rate,
             'total_trades': result.total_trades,
             'max_drawdown': result.max_drawdown
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/notifications/status")
+async def get_notification_status():
+    """알림 상태 조회"""
+    return {
+        'enabled': notification_manager.notifications_enabled,
+        'slack_enabled': notification_manager.slack_enabled,
+        'telegram_enabled': notification_manager.telegram_enabled,
+        'stats': notification_manager.get_notification_stats()
+    }
+
+@app.post("/notifications/test")
+async def test_notification(channel: str = 'all'):
+    """테스트 알림 전송"""
+    try:
+        success = notification_manager.test_notification(channel)
+        return {
+            'success': success,
+            'channel': channel,
+            'message': 'Test notification sent successfully' if success else 'Failed to send test notification'
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/notifications/history")
+async def get_notification_history(limit: int = 50):
+    """알림 히스토리 조회"""
+    try:
+        history = notification_manager.get_notification_history(limit)
+        return history
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/notifications/toggle")
+async def toggle_notifications(enabled: bool):
+    """알림 활성화/비활성화"""
+    try:
+        notification_manager.toggle_notifications(enabled)
+        return {
+            'success': True,
+            'enabled': enabled,
+            'message': f'Notifications {"enabled" if enabled else "disabled"}'
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
